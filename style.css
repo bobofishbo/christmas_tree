@@ -1,0 +1,336 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #111;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Recording state styles */
+body.recording {
+    pointer-events: none;
+}
+
+body.recording::before {
+    content: '📹 recording…';
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    display: inline-block;
+    width: 15ch;
+    height: 2em;
+    line-height: 2em;
+    text-align: center;
+    white-space: nowrap;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1em;
+    border-radius: 50vh;
+    font-size: 2vw;
+}
+
+body.recording canvas {
+    opacity: 0.66;
+}
+
+.canvas-container {
+    position: relative;
+    width: 95vmin;
+    height: 95vmin;
+    max-width: 800px;
+    max-height: 800px;
+    margin: 0 auto;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: grab;
+}
+
+canvas:active {
+    cursor: grabbing;
+}
+
+/* Title and instructions overlay */
+.overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px 20px;
+    border-radius: 10px;
+    max-width: 300px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.overlay h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 600;
+}
+
+.overlay p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.overlay ul {
+    margin-left: 20px;
+    margin-top: 10px;
+    color: #ccc;
+}
+
+.overlay li {
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+}
+
+/* Custom dat.GUI styling */
+.dg.ac {
+    z-index: 100 !important;
+}
+
+.dg.main {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.dg li.title {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 30px;
+    height: 30px;
+    padding-left: 10px;
+    background: linear-gradient(90deg, #2c3e50, #3498db);
+}
+
+.dg .cr.function .property-name {
+    width: 100%;
+    text-align: center;
+}
+
+/* Loading screen */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
+}
+
+.loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #4ecdc4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* FPS counter */
+.fps-counter {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-family: monospace;
+    z-index: 20;
+}
+
+/* Click hint */
+.click-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0.8;
+    animation: pulse 2s infinite;
+    z-index: 20;
+}
+
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 0.5; }
+}
+
+/* Webcam view for hand detection */
+.webcam-view {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 50;
+    display: none;
+}
+
+.webcam-view.active {
+    display: block;
+}
+
+.video-container {
+    position: relative;
+    width: 200px;
+    height: 150px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    background: #000;
+}
+
+#webcam {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* Mirror for natural feel */
+}
+
+.output_canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transform: scaleX(-1); /* Mirror to match video */
+}
+
+/* Instructions panel */
+.instructions-panel {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    min-width: 300px;
+    max-width: 350px;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    display: block;
+}
+
+.instructions-title {
+    color: #FFFFFF;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 10px;
+}
+
+.instructions-content {
+    color: #CCCCCC;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.instruction-section {
+    margin-bottom: 20px;
+}
+
+.instruction-section strong {
+    color: #FFFFFF;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.instruction-section ul {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+    list-style-type: disc;
+}
+
+.instruction-section li {
+    margin-bottom: 6px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .canvas-container {
+        width: 90vmin;
+        height: 90vmin;
+    }
+    
+    .overlay {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+    
+    .dg.main {
+        position: relative;
+        top: 0;
+        right: 0;
+        width: 100%;
+        margin-top: 20px;
+        max-height: 300px;
+    }
+    
+    .fps-counter,
+    .click-hint {
+        display: none;
+    }
+    
+    .camera-view {
+        width: 150px;
+        height: 112px;
+        top: 10px;
+        right: 10px;
+    }
+}

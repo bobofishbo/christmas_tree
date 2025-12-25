@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Christmas Tree</title>
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <!-- Webcam view for hand detection -->
+    <div id="webcamView" class="webcam-view">
+        <div class="video-container">
+            <video id="webcam" autoplay playsinline></video>
+            <canvas class="output_canvas" id="output_canvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Instructions panel -->
+    <div id="instructionsPanel" class="instructions-panel">
+        <div class="instructions-title">How to Use</div>
+        <div class="instructions-content">
+            <div class="instruction-section">
+                <strong>Left Hand (Right side of screen):</strong>
+                <ul>
+                    <li>Open palm → Explode tree</li>
+                    <li>Move up/down → Control rotation speed</li>
+                    <li>Move left/right → Control rotation direction</li>
+                </ul>
+            </div>
+            <div class="instruction-section">
+                <strong>Right Hand (Left side of screen):</strong>
+                <ul>
+                    <li>Point with index finger (while left palm open) → View photos</li>
+                    <li>Swipe left/right → Navigate through photos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MediaPipe Tasks Vision -->
+    <script type="module" src="./hand-detection.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
